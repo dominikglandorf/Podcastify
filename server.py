@@ -38,8 +38,12 @@ def generate_podcast_2():
     # optional parameters
     history = list(request.json['history']) if 'history' in request.json else []
     new_words = list(request.json['new_words']) if 'new_words' in request.json else []
+
+    print(f"Generating podcast in {language} on topic '{topic}' at level {language_level} with history: {history} and new words: {new_words}")
     
     podcast_text = generator.generate(language, language_level, topic, history, new_words)
+
+    print(f"Generated podcast: {podcast_text}")
 
     return jsonify({"success": True, "podcast": podcast_text})
 
@@ -49,7 +53,12 @@ def define():
     word = str(request.json['word'])
     chunk = str(request.json['chunk'])
 
+    print(f"Defining word '{word}' in context '{chunk}'")
+
     text = generator.define(word, chunk)
+
+    print(f"Definition: {text}")
+    
     return jsonify({"success": True, "definition": text})
 
 if __name__ == '__main__':
