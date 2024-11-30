@@ -108,7 +108,7 @@ def define():
     completion = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
     print(completion)
     text = completion.choices[0].message.content
-    return jsonify({"success": True, "definition": chunk(text)})
+    return jsonify({"success": True, "definition": text})
 
 
 @app.route('/test', methods=['POST'])
