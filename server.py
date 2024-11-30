@@ -93,7 +93,7 @@ def define():
     word = str(request.json['word'])
     chunk = str(request.json['chunk'])
 
-    prompt = f"Describe the definition of '{word}' within 25 words, and explain what it means in the context of '{chunk}'."
+    prompt = f"Describe the definition of '{word}' within 25 words, and explain what it means in the context of '{chunk}'. Just output the definition."
 
     client = OpenAI()
 
@@ -108,7 +108,7 @@ def define():
     completion = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
     print(completion)
     text = completion.choices[0].message.content
-    return jsonify({"success": True, "definition": chunk(text)})
+    return jsonify({"success": True, "definition": text})
 
 
 @app.route('/test', methods=['POST'])
