@@ -1,10 +1,6 @@
 
 from flask import Flask, jsonify, request
-from openai import OpenAI
-
-MIN_WORDS = 5
-MAX_GENERATED_TOKENS = 96
-
+import generator
 app = Flask(__name__)
 
 @app.route('/generate_podcast/mock', methods=['POST'])
@@ -30,15 +26,7 @@ def generate_podcast_mock():
 
     return jsonify({"success": True, "podcast": podcast_text})
 
-def chunk(text):
-    output = []
-    chunk = ""
-    for word in text.split():
-        chunk += word + " "
-        if len(chunk.split()) >= MIN_WORDS and ("!" in word or "." in word or "?" in word):
-            output.append(chunk)
-            chunk = ""
-    return output
+
 
 @app.route('/generate_podcast/2', methods=['POST'])
 def generate_podcast_2():
@@ -51,40 +39,8 @@ def generate_podcast_2():
     history = list(request.json['history']) if 'history' in request.json else []
     new_words = list(request.json['new_words']) if 'new_words' in request.json else []
     
-    prompt = f"Generate a podcast with one speaker in '{language}' about '{topic}' on CEFR level {language_level}. Just return the text of the speaker. Do not include a title."
+    podcast_text = generator.generate(language, language_level, topic, history, new_words)
 
-    client = OpenAI()
-
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ]
-
-    if history:
-        messages.append({
-            "role": "assistant", 
-            "content": " ".join(history)
-        })
-        messages.append({
-            "role": "user", 
-            "content": "Continue the podcast (without talking about continuing it)."
-        })
-
-    if new_words:
-        messages[-1]['content'] += " Try to use these words in the text generation: " + ", ".join(new_words)
-
-    # print(messages)
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        max_completion_tokens=MAX_GENERATED_TOKENS)
-    
-    #print(completion)
-    text = completion.choices[0].message.content
-    podcast_text = chunk(text)
     return jsonify({"success": True, "podcast": podcast_text})
 
 @app.route('/define', methods=['POST'])
@@ -93,32 +49,8 @@ def define():
     word = str(request.json['word'])
     chunk = str(request.json['chunk'])
 
-    prompt = f"Describe the definition of '{word}' within 25 words, and explain what it means in the context of '{chunk}'. Just output the definition."
-
-    client = OpenAI()
-
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {
-            "role": "user",
-            "content": prompt
-        }
-    ]
-
-    completion = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
-    print(completion)
-    text = completion.choices[0].message.content
+    text = generator.define(word, chunk)
     return jsonify({"success": True, "definition": text})
-
-
-@app.route('/test', methods=['POST'])
-def test_api():
-    test1 = str(request.json['test1'])
-    test2 = int(request.json['test2'])
-    result = ""
-    for i in range(test2):
-        result += test1 + "-"
-    return jsonify({"success": True, "result": result})
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5001, debug = True)

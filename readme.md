@@ -24,37 +24,11 @@
 
 ---
 
-## Example Usage
+## Usage
 
-Below is an example of how to use the `GPT4oPipeline`:
+You can either use the `generator.py` module stand-alone or the `server.py` to serve functions in a Flask server.
 
-```python
-from gpt4o_pipeline import GPT4oPipeline
+### Functions
 
-# Initialize the pipeline with specific parameters
-pipeline = GPT4oPipeline(
-    language_level="A1", 
-    vocabulary=["Bonjour", "Le supermarché est un endroit pratique pour faire les courses"],
-    session_id="test1"
-)
-
-# Run the pipeline with a single interaction
-response = pipeline.run(
-    input_message="I want a podcast about supermarkets", 
-    next_chunk=False
-)
-print(response)
-
-# Run the pipeline to fetch the next chunk of the response
-response_chunk = pipeline.run(
-    input_message="I want a podcast about supermarkets", 
-    next_chunk=True
-)
-print(response_chunk)
-
-# Access the stored session history
-print(pipeline.store)
-```
-
----
-
+- generate(language, language_level, topic, history, new_words): Create or continue a podcast with or without preferred words.
+- define(word, context): Get the definition of a word within a context.
