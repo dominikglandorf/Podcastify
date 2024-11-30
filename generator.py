@@ -12,7 +12,8 @@ proficiency_descriptors = {
     "C1": "Understands a wide range of material, including non-standard usage, with attention to finer details and implicit attitudes.",
     "B2": "Understands standard language in social, professional, or academic contexts, identifying viewpoints, attitudes, and mood.",
     "B1": "Understands main points of familiar topics and narratives delivered clearly and slowly in standard language.",
-    "A2": "Understands essential information in everyday matters and simple stories if delivered clearly and slowly."
+    "A2": "Understands essential information in everyday matters and simple stories if delivered clearly and slowly.",
+    "A1": "Can pick out concrete information (e.g. places and times) from short recordings on familiar everyday topics, provided they are delivered very slowly and clearly."
 }
 
 def describe_level(level):
