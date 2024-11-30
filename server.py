@@ -30,42 +30,21 @@ def generate_podcast_mock():
 
     return jsonify({"success": True, "podcast": podcast_text})
 
-@app.route('/generate_podcast', methods=['POST'])
-def generate_podcast():
-
-    language = str(request.json['language']) # for example, fr, en, ...
-    language_level = str(request.json['language_level']) # for example, A1, A2, ...
-    personal_dictionary = list(request.json['personal_dictionary']) # a list like this: [{"id": xx, "word": AA, "language": AA, "time_added": xx}, ...]
-    topic = str(request.json['topic']) # for example: "Going to the supermarket"
-
-    prompt = f"Generate a podcast in '{language}' about '{topic}'."
-
-    client = OpenAI()
-
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-    )
-
-    result = completion.choices[0].message.content.split("\n\n")
-    print(result)
-
-    podcast_text = result
-
-    return jsonify({"success": True, "podcast": podcast_text})
+def chunk(text):
+    output = []
+    chunk = ""
+    for word in text.split():
+        chunk += word + " "
+        if len(chunk.split()) >= MIN_WORDS and ("!" in word or "." in word or "?" in word):
+            output.append(chunk)
+            chunk = ""
+    return output
 
 @app.route('/generate_podcast/2', methods=['POST'])
 def generate_podcast_2():
 
     language = str(request.json['language']) # for example, fr, en, ...
     language_level = str(request.json['language_level']) # for example, A1, A2, ...
-    
     topic = str(request.json['topic']) # for example: "Going to the supermarket"
     
     # optional parameters
@@ -94,31 +73,19 @@ def generate_podcast_2():
             "content": "Continue the podcast (without talking about continuing it)."
         })
 
-    # add to the content of the last messsage
     if new_words:
         messages[-1]['content'] += " Try to use these words in the text generation: " + ", ".join(new_words)
 
-    print(messages)
-    
+    # print(messages)
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
         max_completion_tokens=MAX_GENERATED_TOKENS)
-    print(completion)
+    
+    #print(completion)
     text = completion.choices[0].message.content
-
-    # split text into chunks of 10 words but only split at the end of a sentence
-    podcast_text = []
-    chunk = ""
-    for word in text.split():
-        chunk += word + " "
-        # check if chunk contains "! " or ". " or "? " and has at least 10 words
-        if len(chunk.split()) >= MIN_WORDS and ("!" in word or "." in word or "?" in word):
-            podcast_text.append(chunk)
-            chunk = ""
-
+    podcast_text = chunk(text)
     return jsonify({"success": True, "podcast": podcast_text})
-
 
 @app.route('/define', methods=['POST'])
 def define():
@@ -141,17 +108,7 @@ def define():
     completion = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
     print(completion)
     text = completion.choices[0].message.content
-
-    # split text into chunks of 10 words but only split at the end of a sentence
-    podcast_text = []
-    chunk = ""
-    for word in text.split():
-        chunk += word + " "
-        if len(chunk.split()) >= 10 and chunk.endswith(". "):
-            podcast_text.append(chunk)
-            chunk = ""
-
-    return jsonify({"success": True, "definition": podcast_text})
+    return jsonify({"success": True, "definition": chunk(text)})
 
 
 @app.route('/test', methods=['POST'])
