@@ -91,7 +91,7 @@ def q_and_a(language, language_level, topic, messages, history=[], new_words=[])
     client = OpenAI()
 
     api_messages = [
-        {"role": "system", "content": f"You are a language teacher that wants to have a conversation about a podcast on the topic of '{topic}' in '{language} with a learner on CEFR level {language_level}. This was the podcast {' '.join(history)}. Just return the next message text in the conversation. Be brief: Maximum {MAX_WORDS_QA} words per response."},
+        {"role": "system", "content": f"You are a language teacher that wants to have a conversation about a podcast on the topic of '{topic}' in '{language} with a learner on CEFR level {language_level}. This was the podcast {' '.join(history)}. Just return the next message text in the conversation. Use vocabulary and grammar from the podcast. Be brief: Maximum {MAX_WORDS_QA} words per response. "},
     ]
 
     for message in messages:
