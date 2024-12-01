@@ -76,11 +76,11 @@ def q_and_a():
 
     print(f"Generating chat response in {language} on topic '{topic}' at level {language_level} with history: {history} and new words: {new_words}. Previous messages: {messages}")
     
-    podcast_text = generator.q_and_a(language, language_level, topic, messages, history, new_words)
+    next, role = generator.q_and_a(language, language_level, topic, messages, history, new_words)
 
-    print(f"Generated response: {podcast_text}")
+    print(f"Generated response by {role}: {next}")
 
-    return jsonify({"success": True, "podcast": podcast_text})
+    return jsonify({"success": True, "next_message": {"role": role, "content": next}})
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5001, debug = True)
