@@ -5,6 +5,7 @@ load_dotenv()
 
 MIN_WORDS = int(os.getenv("MIN_WORDS"))
 MAX_GENERATED_TOKENS = int(os.getenv("MAX_GENERATED_TOKENS"))
+MAX_WORDS_QA = int(os.getenv("MAX_WORDS_QA")) if os.getenv("MAX_WORDS_QA") else 20
 MODEL = os.getenv("MODEL")
 TEMPERATURE = float(os.getenv("TEMPERATURE"))
 
@@ -32,8 +33,8 @@ def chunk(text):
             chunk = ""
     return output
 
-def generate(language, language_level, topic, history=[], new_words=[]):
-    prompt = f"Generate a podcast with one speaker in '{language}' about '{topic}' using language on CEFR level '{language_level}' (defined as \"{describe_level(language_level)}\"). Just return the text of the speaker. Do not include a title."
+def generate(language, language_level, topic, history=[], new_words=[], length=1):
+    prompt = f"Generate a podcast with one speaker in '{language}' about '{topic}' using language on CEFR level '{language_level}' (defined as \"{describe_level(language_level)}\"). It should be roughly {length} minutes long. Just return the text of the speaker. Do not include a title."
 
     client = OpenAI()
 
@@ -88,7 +89,7 @@ def q_and_a(language, language_level, topic, messages, history=[], new_words=[])
     client = OpenAI()
 
     api_messages = [
-        {"role": "system", "content": f"You are a language teacher that wants to have a conversation about a podcast on the topic of '{topic}' in '{language} with a learner on CEFR level {language_level}. This was the podcast {' '.join(history)}.Just return the next message text in the conversation."},
+        {"role": "system", "content": f"You are a language teacher that wants to have a conversation about a podcast on the topic of '{topic}' in '{language} with a learner on CEFR level {language_level}. This was the podcast {' '.join(history)}. Just return the next message text in the conversation. Be brief: Maximum {MAX_WORDS_QA} words per response."},
     ]
 
     for message in messages:
