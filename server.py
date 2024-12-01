@@ -38,7 +38,7 @@ def generate_podcast_2():
     # optional parameters
     history = list(request.json['history']) if 'history' in request.json else []
     new_words = list(request.json['new_words']) if 'new_words' in request.json else []
-    length = list(request.json['length']) if 'length' in request.json else None
+    length = int(request.json['length']) if 'length' in request.json else None
 
     print(f"Generating podcast in {language} on topic '{topic}' at level {language_level} with history: {history} and new words: {new_words}")
     

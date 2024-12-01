@@ -5,6 +5,7 @@ load_dotenv()
 
 MIN_WORDS = int(os.getenv("MIN_WORDS"))
 MAX_GENERATED_TOKENS = int(os.getenv("MAX_GENERATED_TOKENS"))
+
 MAX_WORDS_QA = int(os.getenv("MAX_WORDS_QA")) if os.getenv("MAX_WORDS_QA") else 20
 DEFAULT_LENGTH_MIN = int(os.getenv("DEFAULT_LENGTH_MIN")) if os.getenv("DEFAULT_LENGTH_MIN") else 1
 MODEL = os.getenv("MODEL")
@@ -37,7 +38,7 @@ def chunk(text):
 def generate(language, language_level, topic, history=[], new_words=[], length=DEFAULT_LENGTH_MIN):
     if length == None: length = DEFAULT_LENGTH_MIN
     prompt = f"Generate a podcast with one speaker in '{language}' about '{topic}' using language on CEFR level '{language_level}' (defined as \"{describe_level(language_level)}\"). It should be roughly {length} minutes long. Just return the text of the speaker. Do not include a title."
-
+    print(MAX_GENERATED_TOKENS)
     client = OpenAI()
 
     messages = [
