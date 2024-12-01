@@ -82,3 +82,27 @@ def define(word, context):
     completion = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
 
     return completion.choices[0].message.content
+
+
+def q_and_a(language, language_level, topic, messages, history=[], new_words=[]):
+    prompt = f"Generate a podcast with one speaker in '{language}' about '{topic}' using language on CEFR level '{language_level}' (defined as \"{describe_level(language_level)}\").  Do not include a title."
+
+    client = OpenAI()
+
+    api_messages = [
+        {"role": "system", "content": f"You are a language teacher that wants to have a conversation about a podcast on the topic of '{topic}' in '{language} with a learner on CEFR level {language_level}. This was the podcast {" ".join(history)}.Just return the next message text in the conversation."},
+    ]
+
+    for message in messages:
+        api_messages.append({
+            "role": message['role'],
+            "content": message['content']
+        })
+
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=api_messages,
+        max_completion_tokens=MAX_GENERATED_TOKENS)
+    
+    text = completion.choices[0].message.content
+    return text

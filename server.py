@@ -58,8 +58,29 @@ def define():
     text = generator.define(word, chunk)
 
     print(f"Definition: {text}")
-    
+
     return jsonify({"success": True, "definition": text})
+
+
+@app.route('/qanda', methods=['POST'])
+def q_and_a():
+
+    language = str(request.json['language']) # for example, fr, en, ...
+    language_level = str(request.json['language_level']) # for example, A1, A2, ...
+    topic = str(request.json['topic']) # for example: "Going to the supermarket"
+    messages = list(request.json['messages']) if 'messages' in request.json else [] # {"role": "user/assistant", "content": "..."}
+    
+    # optional parameters
+    history = list(request.json['history']) if 'history' in request.json else []
+    new_words = list(request.json['new_words']) if 'new_words' in request.json else []
+
+    print(f"Generating chat response in {language} on topic '{topic}' at level {language_level} with history: {history} and new words: {new_words}. Previous messages: {messages}")
+    
+    podcast_text = generator.q_and_a(language, language_level, topic, messages, history, new_words)
+
+    print(f"Generated response: {podcast_text}")
+
+    return jsonify({"success": True, "podcast": podcast_text})
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5001, debug = True)
